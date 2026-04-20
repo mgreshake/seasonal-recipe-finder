@@ -16,18 +16,20 @@ environment on your local machine.
 The application is written in Python. It is highly recommended using a virtual
 environment (e.g. [virtualenv](https://docs.python.org/3/tutorial/venv.html))
 to install additional packages while keeping them separated from your other
-Python projects.
+Python projects. To run the application, Python 3.10 or later is required.
 
 ### Installation
 
-To get started, clone this repository, set up a virtual environment (at
-least Python 3.10) and install the dependencies by running `pip install -r
-requirements.txt` from the root directory of this project.
+To get started, clone this repository, set up a virtual environment and install
+the dependencies by running `pip install -r requirements.txt` from the root
+directory of this project. On Linux and macOS, you can use the supplied Bash
+script to handle dependency management automatically.
 
 ## Usage
 
 The application is launched via `python src/main.py`. Do not forget to activate
-your virtual environment before.
+your virtual environment before. Run `bash seasonal_recipe_finder.sh` to verify
+the installation and start the program in one.
 
 In the main window, all available recipes can be filtered by name and
 ingredients. The results will be sorted in descending order based on a
