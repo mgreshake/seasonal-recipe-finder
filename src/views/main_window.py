@@ -1,4 +1,5 @@
 import datetime
+import math
 
 from database import Database, Document
 from graphics import EmptySpace, VerticalLine
@@ -8,9 +9,10 @@ from widgets import Button, ComboBox, Icon, Label, ListBox, TextBox, TextField, 
 from windows import Application, Dialog, Result
 
 
-SEASON_COEFFICIENT: float = 0.5
-STORAGE_COEFFICIENT: float = 0.45
-ORIGIN_COEFFICIENT: float = 0.5
+SEASON_COEFFICIENT: float = 0.6
+STORAGE_COEFFICIENT: float = 0.54
+RARITY_COEFFICIENT: float = 0.25
+ORIGIN_COEFFICIENT: float = 0.4
 
 
 class MainWindow(Application):
@@ -134,14 +136,17 @@ class MainWindow(Application):
             return score
 
         current_month = datetime.date.today().month
+        season_score = lambda x, y, z: math.exp(x * y * (1 - z) / 11) - 1 + x
+
         for ingredient in seasonal_ingredients:
             has_season = self._is_month_between(current_month, *ingredient["season"])
             is_storing = self._is_month_between(current_month, *ingredient["storage"])
+            length = self._calc_season_length(*ingredient["season"]) + self._calc_season_length(*ingredient["storage"])
 
             if has_season:
-                score += SEASON_COEFFICIENT
+                score += season_score(SEASON_COEFFICIENT, RARITY_COEFFICIENT, length)
             elif is_storing:
-                score += STORAGE_COEFFICIENT
+                score += season_score(STORAGE_COEFFICIENT, RARITY_COEFFICIENT, length)
 
             score += ORIGIN_COEFFICIENT / ingredient["origin"] if ingredient["origin"] else 0.0
 
@@ -172,6 +177,19 @@ class MainWindow(Application):
             bool: `True` if month is within time period, `False` otherwise.
         """
         return (month - start) % 12 <= (end - start) % 12
+
+    @staticmethod
+    def _calc_season_length(start: int, end: int) -> int:
+        """Calculate range between two months.
+
+        Args:
+            start (int): First month of season.
+            end (int): Last month of season.
+
+        Returns:
+            int: Length of season.
+        """
+        return (end - start) % 12 + 1 if start and end else 0
 
     def fill_portion_field(self) -> None:
         """Set number of portions from recipe data."""
