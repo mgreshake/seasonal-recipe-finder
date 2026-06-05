@@ -28,4 +28,5 @@ fi
 
 echo "Run Seasonal Recipe Finder..."
 $PYTHON_BIN "$SCRIPT"
+deactivate
 echo "Exit Seasonal Recipe Finder"
