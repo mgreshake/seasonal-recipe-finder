@@ -1,3 +1,6 @@
+import copy
+import filecmp
+import os
 import pytest
 
 from database import Document
@@ -445,4 +448,127 @@ class TestDeleteRecipe:
         self.window._delete_recipe_button.click()
         assert self.window._recipe_list.entries == recipes
 
+        self.window.close()
+
+
+class TestExportDatabase:
+
+    @pytest.fixture(autouse=True)
+    def _main_window(self, table_with_ingredients, table_with_recipes, date_patch):
+        self.ingredient_table = table_with_ingredients
+        self.recipe_table = table_with_recipes
+        self.window = MainWindow()
+
+    def test_open_message_box_when_database_is_exported(self):
+        assert not self.ingredient_table.is_empty()
+        assert not self.recipe_table.is_empty()
+
+        self.window._export_done_message_box.run = self.window._export_done_message_box.show
+        self.window._export_database_button.click()
+        assert self.window._export_done_message_box.is_visible()
+
+        self.window._export_done_message_box.close()
+        os.remove("ingredients.json")
+        os.remove("recipes.json")
+        self.window.close()
+
+    def test_export_database_to_json(self):
+        assert not self.ingredient_table.is_empty()
+        assert not self.recipe_table.is_empty()
+
+        self.window._export_done_message_box.run = self.window._export_done_message_box.close
+        self.window._export_database_button.click()
+        assert filecmp.cmp("ingredients.json", "tests/resources/ingredients.json")
+        assert filecmp.cmp("recipes.json", "tests/resources/recipes.json")
+
+        os.remove("ingredients.json")
+        os.remove("recipes.json")
+        self.window.close()
+
+    def test_export_nothing_if_table_is_empty(self):
+        documents = self.recipe_table.get_documents([0, 1])
+        self.recipe_table.remove_documents([0, 1])
+        assert self.recipe_table.is_empty()
+
+        self.window._export_done_message_box.run = self.window._export_done_message_box.close
+        self.window._export_database_button.click()
+        assert not os.path.exists("recipes.json")
+
+        os.remove("ingredients.json")
+        self.recipe_table.insert_document(documents[0].fields, 0)
+        self.recipe_table.insert_document(documents[1].fields, 1)
+        self.window.close()
+
+    def test_existing_file_triggers_dialog_on_export(self):
+        self.window._export_done_message_box.run = self.window._export_done_message_box.close
+        self.window._export_database_button.click()
+        assert os.path.exists("recipes.json")
+
+        self.window._existing_file_dialog.run = self.window._existing_file_dialog.show
+        self.window._export_database_button.click()
+        assert self.window._existing_file_dialog.is_visible()
+
+        self.window._existing_file_dialog.close()
+        os.remove("ingredients.json")
+        os.remove("recipes.json")
+        self.window.close()
+
+    def test_overwrite_file_if_dialog_is_confirmed(self):
+        self.window._export_done_message_box.run = self.window._export_done_message_box.close
+        self.window._export_database_button.click()
+        assert filecmp.cmp("recipes.json", "tests/resources/recipes.json")
+
+        def confirm_existing_file_dialog():
+            self.window._existing_file_dialog.confirm()
+            return Result.CONFIRMED
+
+        documents = self.recipe_table.get_documents([1])
+        self.recipe_table.remove_documents([1])
+        self.window._existing_file_dialog.run = confirm_existing_file_dialog
+        self.window._export_database_button.click()
+        assert not filecmp.cmp("recipes.json", "tests/resources/recipes.json")
+
+        os.remove("ingredients.json")
+        os.remove("recipes.json")
+        self.recipe_table.insert_document(documents[0].fields, 1)
+        self.window.close()
+
+    def test_export_nothing_if_dialog_is_cancelled(self):
+        self.window._export_done_message_box.run = self.window._export_done_message_box.close
+        self.window._export_database_button.click()
+        assert filecmp.cmp("recipes.json", "tests/resources/recipes.json")
+
+        def cancel_existing_file_dialog():
+            self.window._existing_file_dialog.cancel()
+            return Result.CANCELLED
+
+        documents = self.recipe_table.get_documents([1])
+        self.recipe_table.remove_documents([1])
+        self.window._existing_file_dialog.run = cancel_existing_file_dialog
+        self.window._export_database_button.click()
+        assert filecmp.cmp("recipes.json", "tests/resources/recipes.json")
+
+        os.remove("ingredients.json")
+        os.remove("recipes.json")
+        self.recipe_table.insert_document(documents[0].fields, 1)
+        self.window.close()
+
+    def test_export_nothing_if_dialog_is_closed(self):
+        self.window._export_done_message_box.run = self.window._export_done_message_box.close
+        self.window._export_database_button.click()
+        assert filecmp.cmp("recipes.json", "tests/resources/recipes.json")
+
+        def close_existing_file_dialog():
+            self.window._existing_file_dialog.close()
+            return Result.CANCELLED
+
+        documents = self.recipe_table.get_documents([1])
+        self.recipe_table.remove_documents([1])
+        self.window._existing_file_dialog.run = close_existing_file_dialog
+        self.window._export_database_button.click()
+        assert filecmp.cmp("recipes.json", "tests/resources/recipes.json")
+
+        os.remove("ingredients.json")
+        os.remove("recipes.json")
+        self.recipe_table.insert_document(documents[0].fields, 1)
         self.window.close()

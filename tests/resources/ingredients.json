@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Apple",
+    "season": [
+      8,
+      11
+    ],
+    "storage": [
+      12,
+      5
+    ],
+    "origin": 1
+  },
+  {
+    "name": "Banana",
+    "season": [
+      1,
+      12
+    ],
+    "storage": [
+      0,
+      0
+    ],
+    "origin": 3
+  },
+  {
+    "name": "Sugar",
+    "season": [
+      0,
+      0
+    ],
+    "storage": [
+      0,
+      0
+    ],
+    "origin": 0
+  },
+  {
+    "name": "Milk",
+    "season": [
+      0,
+      0
+    ],
+    "storage": [
+      0,
+      0
+    ],
+    "origin": 0
+  }
+]

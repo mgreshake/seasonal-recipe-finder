@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Fruit Salad",
+    "portions": 4,
+    "ingredients": [
+      {
+        "quantity": 3.0,
+        "unit": 0,
+        "id": 0
+      },
+      {
+        "quantity": 4.0,
+        "unit": 0,
+        "id": 1
+      },
+      {
+        "quantity": 50.0,
+        "unit": 1,
+        "id": 2
+      }
+    ],
+    "preparation": "Put all together."
+  },
+  {
+    "name": "Banana Smoothie",
+    "portions": 2,
+    "ingredients": [
+      {
+        "quantity": 2.0,
+        "unit": 0,
+        "id": 1
+      },
+      {
+        "quantity": 2.0,
+        "unit": 7,
+        "id": 2
+      },
+      {
+        "quantity": 400.0,
+        "unit": 5,
+        "id": 3
+      }
+    ],
+    "preparation": "Slice, mix, done."
+  }
+]

@@ -1,12 +1,14 @@
 import datetime
+import json
 import math
+import os
 
-from database import Database, Document
+from database import Database, Document, Table
 from graphics import EmptySpace, VerticalLine
 from layouts import FormLayout, HorizontalBoxLayout, VerticalBoxLayout
 from views.recipe_window import Recipe, RecipeWindow
 from widgets import Button, ComboBox, Icon, Label, ListBox, TextBox, TextField, DropdownList
-from windows import Application, Dialog, Result
+from windows import Application, Dialog, MessageBox, Result
 
 
 SEASON_COEFFICIENT: float = 0.6
@@ -36,6 +38,7 @@ class MainWindow(Application):
         add_recipe_icon = Icon("src/resources/plus-solid.svg")
         edit_recipe_icon = Icon("src/resources/pen-solid.svg")
         delete_recipe_icon = Icon("src/resources/trash-can-solid.svg")
+        export_database_icon = Icon("src/resources/download-solid-full.svg")
 
         self._recipe_name_field: TextField = TextField()
         self._ingredient_combo_box: ComboBox = ComboBox(ingredients)
@@ -61,6 +64,11 @@ class MainWindow(Application):
             callback=self.delete_recipe_from_database,
             height=28,
         )
+        self._export_database_button: Button = Button(
+            export_database_icon,
+            callback=self.export_database_to_json,
+            height=28,
+        )
 
         self._portion_field: TextField = TextField(
             alignment="right",
@@ -74,7 +82,16 @@ class MainWindow(Application):
         self._recipe_window: RecipeWindow = RecipeWindow(self, confirm_callback=self.update_recipe_list)
         self._delete_recipe_dialog: Dialog = Dialog(
             self,
-            "Are you sure to delete recipe from database. This operation cannot be reverted.",
+            "Are you sure to delete recipe from database? This operation cannot be reverted.",
+        )
+        self._existing_file_dialog: Dialog = Dialog(
+            self,
+            "Export already exists. Are you sure to overwrite existing files?",
+        )
+        self._export_done_message_box: MessageBox = MessageBox(
+            self,
+            "Export database successfully.",
+            type="info",
         )
 
         recipe_selection = FormLayout(horizontal_spacing=15)
@@ -86,6 +103,7 @@ class MainWindow(Application):
         recipe_buttons.add_item(self._add_recipe_button)
         recipe_buttons.add_item(self._edit_recipe_button)
         recipe_buttons.add_item(self._delete_recipe_button)
+        recipe_buttons.add_item(self._export_database_button)
         recipe_buttons.add_item(EmptySpace())
 
         recipe_panel = HorizontalBoxLayout()
@@ -253,6 +271,47 @@ class MainWindow(Application):
             if self._delete_recipe_dialog.run() == Result.CONFIRMED:
                 self._database.recipe.remove_documents([recipe_id])
                 self._recipe_list.remove(index)
+
+    def export_database_to_json(self) -> None:
+        """Export ingredients and recipes from database to JSON files.
+
+        If the database is empty, nothing will be exported.
+        """
+        if self._export_already_exists() and self._existing_file_dialog.run() == Result.CANCELLED:
+            return
+
+        has_exported = False
+
+        if not self._database.ingredient.is_empty():
+            self._export_table_to_json(self._database.ingredient, "ingredients.json")
+            has_exported = True
+        if not self._database.recipe.is_empty():
+            self._export_table_to_json(self._database.recipe, "recipes.json")
+            has_exported = True
+
+        if has_exported:
+            self._export_done_message_box.run()
+
+    @staticmethod
+    def _export_already_exists() -> bool:
+        """Check if files to be exported already exist.
+
+        Returns:
+            bool: `True` if database export already exists, `False` otherwise.
+        """
+        return os.path.exists("ingredients.json") or os.path.exists("recipes.json")
+
+    @staticmethod
+    def _export_table_to_json(table: Table, filename: str) -> None:
+        """Write documents of table to JSON file.
+
+        Args:
+            table (Table): Table to be exported.
+            filename (str): Name of JSON file.
+        """
+        with open(filename, "w") as file:
+            documents = table.get_documents()
+            json.dump(documents, file, indent=2)
 
     def update_recipe_list(self, recipe: str) -> None:
         """Update recipe list entries and selection.
