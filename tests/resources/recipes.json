@@ -1,5 +1,5 @@
-[
-  {
+{
+  "0": {
     "name": "Fruit Salad",
     "portions": 4,
     "ingredients": [
@@ -21,7 +21,7 @@
     ],
     "preparation": "Put all together."
   },
-  {
+  "1": {
     "name": "Banana Smoothie",
     "portions": 2,
     "ingredients": [
@@ -43,4 +43,4 @@
     ],
     "preparation": "Slice, mix, done."
   }
-]
+}

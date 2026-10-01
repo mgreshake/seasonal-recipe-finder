@@ -310,7 +310,7 @@ class MainWindow(Application):
             filename (str): Name of JSON file.
         """
         with open(filename, "w") as file:
-            documents = table.get_documents()
+            documents = {document.id: document.fields for document in table.get_documents()}
             json.dump(documents, file, indent=2)
 
     def update_recipe_list(self, recipe: str) -> None:

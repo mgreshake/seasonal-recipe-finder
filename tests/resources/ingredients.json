@@ -1,5 +1,5 @@
-[
-  {
+{
+  "0": {
     "name": "Apple",
     "season": [
       8,
@@ -11,7 +11,7 @@
     ],
     "origin": 1
   },
-  {
+  "1": {
     "name": "Banana",
     "season": [
       1,
@@ -23,7 +23,7 @@
     ],
     "origin": 3
   },
-  {
+  "2": {
     "name": "Sugar",
     "season": [
       0,
@@ -35,7 +35,7 @@
     ],
     "origin": 0
   },
-  {
+  "3": {
     "name": "Milk",
     "season": [
       0,
@@ -47,4 +47,4 @@
     ],
     "origin": 0
   }
-]
+}

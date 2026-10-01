@@ -262,9 +262,8 @@ class Table:
         Returns:
             list[Document]: Requested documents.
         """
-        if not document_ids:
-            return self._table.all()
-        return [Document(document) for document in self._table.get(doc_ids=document_ids)]
+        documents = self._table.get(doc_ids=document_ids) if document_ids else self._table.all()
+        return [Document(document) for document in documents]
 
     def update_documents(self, document_ids: Iterable[int], fields: Mapping[str, Any]) -> None:
         """Update all documents in table matching given IDs.
