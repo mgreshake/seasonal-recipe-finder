@@ -262,21 +262,6 @@ class TestRecipeWindow:
         self.window._missing_ingredients_message_box.close()
         self.window.close()
 
-    def test_existing_name_triggers_message_box_on_confirmation(self):
-        recipe_name = "Fruit Salad"
-        self.window._ingredient_list.append(ListEntry("Apple"))
-        self.window._ingredient_list.append(ListEntry("Banana"))
-        assert self.table.search(f"name == '{recipe_name}'")
-        assert self.window._ingredient_list.count >= 2
-
-        self.window._existing_name_message_box.run = self.window._existing_name_message_box.show
-        self.window._name_field.fill(recipe_name)
-        self.window._confirm_button.click()
-        assert self.window._existing_name_message_box.is_visible()
-
-        self.window._existing_name_message_box.close()
-        self.window.close()
-
 
 class TestAddIngredient:
 

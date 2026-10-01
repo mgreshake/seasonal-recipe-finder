@@ -143,7 +143,7 @@ class ListEntries(Generic[_EntryDataT]):
             case None:
                 entries = []
             case Mapping():
-                entries = [ListEntry(key, collection[key]) for key in collection]
+                entries = [ListEntry(key, item) for key, item in collection.items()]
             case Iterable():
                 entries = [ListEntry(item) for item in collection]
             case _:

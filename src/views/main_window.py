@@ -31,8 +31,8 @@ class MainWindow(Application):
         self._database.create_table("ingredient", suppress_warning=True)
 
         documents = self._database.recipe.search(sort_by={self.calc_sustainability_score: "desc", "name": "asc"})
-        recipes = {document["name"]: document.id for document in documents}
-        ingredients = {document["name"]: document.id for document in self._database.ingredient.search(sort_by="name")}
+        recipes = [(document["name"], document.id) for document in documents]
+        ingredients = [(document["name"], document.id) for document in self._database.ingredient.search(sort_by="name")]
 
         search_recipe_icon = Icon("src/resources/magnifying-glass-solid.svg")
         add_recipe_icon = Icon("src/resources/plus-solid.svg")
@@ -232,7 +232,7 @@ class MainWindow(Application):
             " & ".join(conditions),
             sort_by={self.calc_sustainability_score: "desc", "name": "asc"},
         )
-        self._recipe_list.entries = {document["name"]: document.id for document in documents}
+        self._recipe_list.entries = [(document["name"], document.id) for document in documents]
 
     def add_recipe_to_database(self) -> None:
         """Add new recipe to database.
@@ -320,8 +320,7 @@ class MainWindow(Application):
             recipe (str): New or edited recipe name from input mask.
         """
         documents = self._database.recipe.search(sort_by={self.calc_sustainability_score: "desc", "name": "asc"})
-        recipes = {document["name"]: document.id for document in documents}
-        self._recipe_list.entries = recipes
+        self._recipe_list.entries = [(document["name"], document.id) for document in documents]
         index = self._recipe_list.entries.labels.index(recipe)
         self._recipe_list.select(index)
 

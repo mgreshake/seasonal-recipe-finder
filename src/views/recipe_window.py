@@ -29,6 +29,7 @@ QUANTITY_UNITS: Enum = Enum([
     "Bund",
     "Handvoll",
     "Tropfen",
+    "Schuss",
     "Scheiben",
     "Stangen",
     "Stiele",
@@ -131,11 +132,6 @@ class RecipeWindow(Window):
         self._missing_ingredients_message_box: MessageBox = MessageBox(
             self,
             f"Recipe must contain at least {MIN_NUM_INGREDIENTS} ingredients. Please add more ingredients.",
-            type="warning",
-        )
-        self._existing_name_message_box: MessageBox = MessageBox(
-            self,
-            "Recipe with this name already exists. Please choose another name.",
             type="warning",
         )
 
