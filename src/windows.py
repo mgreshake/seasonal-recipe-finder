@@ -183,6 +183,11 @@ class Application(Window):
         self._instance.show()
         self._app.exec()
 
+    def close(self) -> None:
+        """Close main window and destroy application."""
+        super().close()
+        del self._app
+
 
 class MessageBox(Window):
     """Interface for small window that requires interaction from user."""

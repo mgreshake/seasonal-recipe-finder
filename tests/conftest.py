@@ -29,7 +29,7 @@ def database():
     os.remove(path)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def window():
     app = Application("Test Window", 640, 480)
     app.show()
